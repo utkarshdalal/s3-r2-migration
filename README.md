@@ -9,15 +9,15 @@ This tool facilitates a "Sippy-based" migration from AWS S3 to Cloudflare R2. In
 ### 1. Cloudflare Account
 
 - If you don't have a Cloudflare account, sign up at [Cloudflare Registration](https://dash.cloudflare.com/sign-up).
-- After signing up, note down your `account_id` from the Cloudflare dashboard.
+- After signing up, register for R2 in the sidebar and note down your `account_id` from the Cloudflare dashboard.
 
 ### 2. Install and Set Up Wrangler
 
 - Install Wrangler globally using `npm` (Node.js package manager):
 
-npm install -g @cloudflare/wrangler
-
-csharp
+```
+sudo npm install -g wrangler
+```
 
 
 - Authenticate Wrangler with your Cloudflare account:
@@ -31,12 +31,12 @@ This will open a Cloudflare login page in your web browser. Sign in to grant Wra
 ### 3. AWS Credentials
 
 - You should have an AWS account with an S3 bucket that you want to migrate.
-- Note down your AWS `access_key_id` and `secret_access_key` with appropriate permissions. These are required for Sippy to migrate data.
+- Create a user with read and list permissions for your bucket and create an access token. Note down your AWS `access_key_id` and `secret_access_key` with appropriate permissions. These are required for Sippy to migrate data.
 
 ### 4. Cloudflare R2 Credentials
 
 - In the Cloudflare dashboard, navigate to the R2 section.
-- Generate or note down your R2 `access_key_id` and `secret_access_key`.
+- Create an API token with read and write permissions and note down your R2 `access_key_id` and `secret_access_key`.
 
 ### 5. Python Environment
 
@@ -72,11 +72,11 @@ python migration.py
 
 - The script will ask you for various inputs like Cloudflare account ID, API token, AWS credentials, and the directory path for the Python codebase.
 - If you already have a Cloudflare R2 bucket created, you can skip the bucket creation step and provide the existing bucket name when prompted.
-- The script will also ask for the AWS region. If not provided, it will default to 'auto'.
+- The script will also ask for the AWS region.
 
 ### 4. Verify the Migration
 
-- After the script runs successfully, verify that your data has been migrated to the specified R2 bucket.
+- After the script runs successfully, verify that your data has been migrated to the specified R2 bucket. Make a request using your updated S3 code using boto3 and it should work correctly.
 - Check the Python codebase to ensure AWS S3 references are updated to Cloudflare R2.
 
 ## Troubleshooting

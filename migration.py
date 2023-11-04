@@ -16,17 +16,18 @@ def create_bucket(account_id, api_token, bucket_name):
     response = requests.post(url, headers=headers, json=data)
     return response.json()
 
-def enable_sippy(account_id, api_token, bucket_name, aws_access_key, aws_secret_key, r2_access_key, r2_secret_key):
-    url = f"{CLOUDFLARE_API_BASE_URL}/{account_id}/r2/buckets/{bucket_name}/sippy"
+def enable_sippy(account_id, api_token, aws_bucket_name, aws_access_key, aws_secret_key, zone, r2_bucket_name, r2_access_key, r2_secret_key):
+    url = f"{CLOUDFLARE_API_BASE_URL}/{account_id}/r2/buckets/{r2_bucket_name}/sippy"
     headers = {
         "Authorization": f"Bearer {api_token}",
         "Content-Type": "application/json"
     }
     data = {
         "provider": "AWS",
-        "bucket": bucket_name,
+        "bucket": aws_bucket_name,
         "key_id": aws_access_key,
         "access_key": aws_secret_key,
+        "zone": zone,
         "r2_key_id": r2_access_key,
         "r2_access_key": r2_secret_key
     }
@@ -67,17 +68,19 @@ if __name__ == "__main__":
     os.environ["CLOUDFLARE_API_TOKEN"] = input("Enter your Cloudflare API token: ")
     os.environ["AWS_ACCESS_KEY"] = input("Enter AWS Access Key ID: ")
     os.environ["AWS_SECRET_KEY"] = input("Enter AWS Secret Access Key: ")
+    os.environ["AWS_BUCKET_ZONE"] = input("Enter AWS bucket zone: ")
+    os.environ["AWS_BUCKET_NAME"] = input("Enter AWS bucket name: ")
     os.environ["R2_ACCESS_KEY"] = input("Enter R2 Access Key ID: ")
     os.environ["R2_SECRET_KEY"] = input("Enter R2 Secret Access Key: ")
 
     # Decide to create a bucket or not
     create_bucket_choice = input("Do you want to create a new Cloudflare R2 bucket? (yes/no): ")
     if create_bucket_choice.lower() == "yes":
-        os.environ["BUCKET_NAME"] = input("Enter the Cloudflare R2 bucket name: ")
-        create_bucket_response = create_bucket(os.environ["CLOUDFLARE_ACCOUNT_ID"], os.environ["CLOUDFLARE_API_TOKEN"], os.environ["BUCKET_NAME"])
+        os.environ["CLOUDFLARE_BUCKET_NAME"] = input("Enter the Cloudflare R2 bucket name: ")
+        create_bucket_response = create_bucket(os.environ["CLOUDFLARE_ACCOUNT_ID"], os.environ["CLOUDFLARE_API_TOKEN"], os.environ["CLOUDFLARE_BUCKET_NAME"])
         print(create_bucket_response)
     else:
-        os.environ["BUCKET_NAME"] = input("Enter the name of the existing Cloudflare R2 bucket: ")
+        os.environ["CLOUDFLARE_BUCKET_NAME"] = input("Enter the name of the existing Cloudflare R2 bucket: ")
 
     # Take region input from the user or set to 'auto'
     region = input("Enter the Cloudflare bucket region (leave blank for 'auto'): ")
@@ -85,7 +88,7 @@ if __name__ == "__main__":
         region = 'auto'
 
     # Enabling Sippy and Updating the codebase
-    sippy_response = enable_sippy(os.environ["CLOUDFLARE_ACCOUNT_ID"], os.environ["CLOUDFLARE_API_TOKEN"], os.environ["BUCKET_NAME"], os.environ["AWS_ACCESS_KEY"], os.environ["AWS_SECRET_KEY"], os.environ["R2_ACCESS_KEY"], os.environ["R2_SECRET_KEY"])
+    sippy_response = enable_sippy(os.environ["CLOUDFLARE_ACCOUNT_ID"], os.environ["CLOUDFLARE_API_TOKEN"], os.environ["AWS_BUCKET_NAME"], os.environ["AWS_ACCESS_KEY"], os.environ["AWS_SECRET_KEY"], os.environ["AWS_BUCKET_ZONE"], os.environ["CLOUDFLARE_BUCKET_NAME"], os.environ["R2_ACCESS_KEY"], os.environ["R2_SECRET_KEY"])
     print(sippy_response)
 
     directory = input("Enter the directory path of your Python codebase: ")
