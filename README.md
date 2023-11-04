@@ -64,7 +64,7 @@ cd <repository-directory>
 The script will prompt you for various credentials and other necessary information. 
 
 ```
-python migration_script.py
+python migration.py
 ```
 
 
